@@ -1,24 +1,10 @@
 
 from sprites import *
+from settings import *
 import pygame as pg
 
 pg.mixer.pre_init()
 pg.init()
-
-TITLE = "Computing Project Platformer"
-WIDTH = 960
-HEIGHT = 640
-FPS = 60
-GRID_SIZE = 64
-
-sound_on = True
-
-LEFT = pg.K_LEFT
-RIGHT = pg.K_RIGHT
-JUMP = pg.K_UP
-
-TRANSPARENT = (0, 0, 0, 0)
-WHITE = (255, 255, 255)
 
 
 def play_sound(sound, loops=0, maxtime=0, fade_ms=0):
@@ -44,61 +30,69 @@ class Game:
         self.platforms = pg.sprite.Group()
 
         for i in range(0, 64):
-            platform = Platform(i * GRID_SIZE, 9 * GRID_SIZE, PlatformType.MID)
+            platform = Platform(i * GRID_SIZE, 19 * GRID_SIZE, PlatformType.MID)
             self.platforms.add(platform)
             self.inactive_sprites.add(platform)
 
-        platform = Platform(2 * GRID_SIZE, 8 * GRID_SIZE, PlatformType.GROUND)
+        platform = Platform(2 * GRID_SIZE, 18 * GRID_SIZE, PlatformType.GROUND)
         self.platforms.add(platform)
         self.inactive_sprites.add(platform)
 
         for i in range(3, 8):
-            platform = Platform(i * GRID_SIZE, 8 * GRID_SIZE, PlatformType.MID)
+            platform = Platform(i * GRID_SIZE, 18 * GRID_SIZE, PlatformType.MID)
             self.platforms.add(platform)
             self.inactive_sprites.add(platform)
 
-        platform = Platform(3 * GRID_SIZE, 7 * GRID_SIZE, PlatformType.GROUND)
+        platform = Platform(3 * GRID_SIZE, 17 * GRID_SIZE, PlatformType.GROUND)
         self.platforms.add(platform)
         self.inactive_sprites.add(platform)
 
         for i in range(4, 8):
-            platform = Platform(i * GRID_SIZE, 7 * GRID_SIZE, PlatformType.MID)
+            platform = Platform(i * GRID_SIZE, 17 * GRID_SIZE, PlatformType.MID)
             self.platforms.add(platform)
             self.inactive_sprites.add(platform)
 
-        platform = Platform(4 * GRID_SIZE, 6 * GRID_SIZE, PlatformType.GROUND)
+        platform = Platform(4 * GRID_SIZE, 16 * GRID_SIZE, PlatformType.GROUND)
         self.platforms.add(platform)
         self.inactive_sprites.add(platform)
 
         for i in range(5, 8):
-            platform = Platform(i * GRID_SIZE, 6 * GRID_SIZE, PlatformType.MID)
+            platform = Platform(i * GRID_SIZE, 16 * GRID_SIZE, PlatformType.MID)
             self.platforms.add(platform)
             self.inactive_sprites.add(platform)
 
-        platform = Platform(5 * GRID_SIZE, 5 * GRID_SIZE, PlatformType.GROUND)
+        platform = Platform(5 * GRID_SIZE, 15 * GRID_SIZE, PlatformType.GROUND)
         self.platforms.add(platform)
         self.inactive_sprites.add(platform)
 
         for i in range(6, 8):
-            platform = Platform(i * GRID_SIZE, 5 * GRID_SIZE, PlatformType.MID)
+            platform = Platform(i * GRID_SIZE, 15 * GRID_SIZE, PlatformType.MID)
             self.platforms.add(platform)
             self.inactive_sprites.add(platform)
 
-        platform = Platform(6 * GRID_SIZE, 4 * GRID_SIZE, PlatformType.GROUND)
+        platform = Platform(6 * GRID_SIZE, 14 * GRID_SIZE, PlatformType.GROUND)
         self.platforms.add(platform)
         self.inactive_sprites.add(platform)
 
         for i in range(7, 8):
-            platform = Platform(i * GRID_SIZE, 4 * GRID_SIZE, PlatformType.MID)
+            platform = Platform(i * GRID_SIZE, 14 * GRID_SIZE, PlatformType.MID)
             self.platforms.add(platform)
             self.inactive_sprites.add(platform)
 
-        platform = Platform(7 * GRID_SIZE, 3 * GRID_SIZE, PlatformType.GROUND)
+        platform = Platform(7 * GRID_SIZE, 13 * GRID_SIZE, PlatformType.GROUND)
         self.platforms.add(platform)
         self.inactive_sprites.add(platform)
 
-        self.inactive_layer = pg.Surface([64 * GRID_SIZE, 10 * GRID_SIZE], pg.SRCALPHA, 32)
-        self.active_layer = pg.Surface([64 * GRID_SIZE, 10 * GRID_SIZE], pg.SRCALPHA, 32)
+        platform = Platform(9 * GRID_SIZE, 12 * GRID_SIZE, PlatformType.GROUND)
+        self.platforms.add(platform)
+        self.inactive_sprites.add(platform)
+
+        platform = Platform(11 * GRID_SIZE, 11 * GRID_SIZE, PlatformType.GROUND)
+        self.platforms.add(platform)
+        self.inactive_sprites.add(platform)
+
+        self.inactive_layer = pg.Surface([64 * GRID_SIZE, 20 * GRID_SIZE], pg.SRCALPHA, 32)
+        self.active_layer = pg.Surface([64 * GRID_SIZE, 20 * GRID_SIZE], pg.SRCALPHA, 32)
         self.inactive_sprites.draw(self.inactive_layer)
 
     def process_events(self):

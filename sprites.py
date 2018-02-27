@@ -1,6 +1,8 @@
-import pygame as pg
+
 from os import path
 from enum import Enum
+from settings import *
+import pygame as pg
 
 
 class Spritesheet:
@@ -12,7 +14,7 @@ class Spritesheet:
 
         image = pg.Surface((width, height))
         image.blit(self.spritesheet, (0, 0), (x, y, width, height))
-        image = pg.transform.scale(image, (64, 64))
+        image = pg.transform.scale(image, (GRID_SIZE, GRID_SIZE))
         return image
 
 
@@ -56,12 +58,12 @@ class Player(Entity):
     def __init__(self):
         self.dir = path.dirname(__file__)
         img_dir = path.join(self.dir, 'img')
-        self.spritesheet = Spritesheet(path.join(img_dir, 'player_tilesheet.png'))
-        image = self.spritesheet.get_image(10, 14, 61, 96)
+        self.spritesheet = Spritesheet(path.join(img_dir, 'spritesheet_jumper.png'))
+        image = self.spritesheet.get_image(690, 406, 120, 201)
         super().__init__(4 * 32, 8 * 32, image)
 
         self.speed = 5
-        self.jump_power = 20
+        self.jump_power = 15
 
         self.vx = 0
         self.vy = 0
@@ -79,15 +81,16 @@ class Player(Entity):
         self.images_load()
 
     def images_load(self):
-        self.standing_frames = [self.spritesheet.get_image(10, 14, 61, 96)]
+        self.standing_frames = [self.spritesheet.get_image(690, 406, 120, 201),
+                                self.spritesheet.get_image(614, 1063, 120, 191)]
         for frame in self.standing_frames:
             frame.set_colorkey((0, 0, 0))
-        self.walk_frames_r = [self.spritesheet.get_image(3, 123, 71, 97),
-                              self.spritesheet.get_image(411, 234, 58, 96)]
+        self.walk_frames_r = [self.spritesheet.get_image(678, 860, 120, 201),
+                              self.spritesheet.get_image(692, 1458, 120, 207)]
         for frame in self.walk_frames_r:
             frame.set_colorkey((0, 0, 0))
             self.walk_frames_l.append(pg.transform.flip(frame, True, False))
-        self.jump_frames_r = [self.spritesheet.get_image(84, 9, 71, 100)]
+        self.jump_frames_r = [self.spritesheet.get_image(382, 763, 150, 181)]
         for frame in self.jump_frames_r:
             frame.set_colorkey((0, 0, 0))
             self.jump_frames_l.append(pg.transform.flip(frame, True, False))
@@ -111,7 +114,7 @@ class Player(Entity):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
-        if not self.on_ground:
+        if not self.on_ground and self.vy < 0:
             if now - self.last_update > 180:
                 self.last_update = now
                 self.current_frame = (self.current_frame + 1) % len(self.jump_frames_l)
@@ -159,8 +162,8 @@ class Player(Entity):
     def check_world_boundaries(self):
         if self.rect.left < 0:
             self.rect.left = 0
-        elif self.rect.right > 64 * 64:
-            self.rect.right = 64 * 64
+        elif self.rect.right > 64 * GRID_SIZE:
+            self.rect.right = 64 * GRID_SIZE
         elif self.rect.top < 0:
             self.rect.top = 0
 

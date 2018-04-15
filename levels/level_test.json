@@ -1,0 +1,51 @@
+{
+	"Player": {
+	
+		"coords": [0,19]
+	},
+	"Enemies": {
+	
+		"0": {
+			"coords": [11, 16],
+			"type": "basic"
+		}
+	},
+	"Powerups": {
+	
+		"0": {
+			"coords": [12, 16],
+			"type": "invincibility"
+		}
+	},
+	"Platforms": {
+
+		"Floor": {
+
+			"Gaps": {
+				"0": 3
+			},
+
+			"y": 19,
+
+			"length": 64
+		},
+
+		"Other": {
+
+			"0": {
+				"coords": [10, 17],
+				"type": "rounded_left"
+			},
+
+			"1": {
+				"coords": [11, 17],
+				"type": "square_grass"
+			},
+
+			"2": {
+				"coords": [12, 17],
+				"type": "rounded_right"
+			}
+		}
+	}
+}

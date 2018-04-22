@@ -6,6 +6,7 @@ import pygame as pg
 
 
 # Spritesheet object for a .png file
+# https://github.com/kidscancode/pygame_tutorials/blob/master/platform/working/sprites.py#L7
 class Spritesheet:
 
     # Spritesheet constructor
@@ -22,6 +23,7 @@ class Spritesheet:
 
 
 # Base class for sprites within the game
+# https://github.com/joncoop/pygame-platformer/blob/master/game.py#L96
 class Entity(pg.sprite.Sprite):
 
     # Entity constructor
@@ -29,6 +31,7 @@ class Entity(pg.sprite.Sprite):
         super().__init__()  # Call pygame constructor for sprites
 
         self.image = image  # Initialize image attribute inherited from pygame Sprite class
+        self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()  # Get the rect object for the image attribute
         self.rect.x = x  # Set sprite x position
         self.rect.y = y  # Set sprite y position
@@ -45,18 +48,22 @@ class Entity(pg.sprite.Sprite):
         self.vy = min(self.vy, 32)  # Terminal velocity is 32
 
     # Move sprite left
+    # https://github.com/joncoop/pygame-platformer/blob/master/game.py#L148
     def move_left(self):
         self.vx = -self.speed
 
     # Move sprite right
+    # https://github.com/joncoop/pygame-platformer/blob/master/game.py#L152
     def move_right(self):
         self.vx = self.speed
 
     # Stop sprite moving
+    # https://github.com/joncoop/pygame-platformer/blob/master/game.py#L156
     def stop(self):
         self.vx = 0
 
     # Add velocity to position and detect collisions with platforms
+    # https://github.com/joncoop/pygame-platformer/blob/master/game.py#L176
     def move_and_process_platforms(self, platforms):
         self.rect.x += self.vx  # Move in x direction
         hit_list = pg.sprite.spritecollide(self, platforms, False)
@@ -110,6 +117,7 @@ class Platform(Entity):
 # Specify platform types for use in loading images from platform spritesheet
 class PlatformType(Enum):
     SQUARE_GRASS = (280, 210, 70, 70)
+    SMALL_GRASS = (0, 70, 70, 40)
     BLANK = (70, 280, 70, 70)
     ROUNDED_RIGHT = (210, 140, 70, 70)
     ROUNDED_LEFT = (210, 210, 70, 70)
@@ -129,6 +137,8 @@ class PlatformType(Enum):
             return PlatformType.ROUNDED_RIGHT
         if string == "rounded_left":
             return PlatformType.ROUNDED_LEFT
+        if string == "small_grass":
+            return PlatformType.SMALL_GRASS
         return PlatformType.BLANK
 
 
@@ -145,7 +155,7 @@ class Player(Entity):
         super().__init__(x * 32, y * 32, image)  # Call constructor for Entity
 
         self.speed = 3.75  # Player speed attribute initialized as 3.75
-        self.jump_power = 15  # Player jump_power attribute initialized as 15
+        self.jump_power = 18  # Player jump_power attribute initialized as 18
 
         self.vx = 0  # X velocity attribute initialized as 0
         self.vy = 0  # Y velocity attribute initialized as 0
@@ -168,6 +178,7 @@ class Player(Entity):
         self.invincible_time = 0
 
     # Populate frame lists with image objects
+    # https://github.com/kidscancode/pygame_tutorials/blob/master/platform/working/sprites.py#L37
     def images_load(self):
         self.standing_frames = [self.spritesheet.get_image(690, 406, 120, 201),
                                 self.spritesheet.get_image(614, 1063, 120, 191)]
@@ -184,6 +195,7 @@ class Player(Entity):
             self.jump_frames_l.append(pg.transform.flip(frame, True, False))
 
     # Animate player sprite
+    # https://github.com/kidscancode/pygame_tutorials/blob/master/platform/working/sprites.py#L90
     def animate(self):
         now = pg.time.get_ticks()
         if self.vx != 0:
@@ -229,19 +241,21 @@ class Player(Entity):
         self.mask = pg.mask.from_surface(self.image)
 
     # Make sprite jump
-    def jump(self, platforms):
+    # https://github.com/joncoop/pygame-platformer/blob/master/game.py#L159
+    def jump(self, game):
         self.rect.y += 1
 
-        hit_list = pg.sprite.spritecollide(self, platforms, False)
+        hit_list = pg.sprite.spritecollide(self, game.platforms, False)
 
         # Only jump when collision with platform detected
         if len(hit_list) > 0:
             self.vy = -1 * self.jump_power
+            game.jump_sound.play()
 
         self.rect.y -= 1
 
     # Keep sprite within world boundaries
-    def check_world_boundaries(self):
+    def check_world_boundaries(self, level):
         # Check left side
         if self.rect.left < 0:
             self.rect.left = 0
@@ -251,14 +265,16 @@ class Player(Entity):
         # Check top
         elif self.rect.top < 0:
             self.rect.top = 0
+        elif self.rect.bottom > HEIGHT:
+            self.die(level)
 
     # Add hearts, use negative values to take hearts away
     def add_hearts(self, hearts, game):
-        # if hearts > 0:
-            # playSound(LVL_UP_SOUND)
+        if hearts > 0:
+            game.heart_sound.play()
 
-        # else:
-            # playSound(DMG_SOUND)
+        else:
+            game.hurt_player_sound.play()
 
         self.hearts += hearts  # Add hearts
 
@@ -266,21 +282,25 @@ class Player(Entity):
             self.hearts = MAX_HEARTS
 
         elif self.hearts < 0:  # When hearts < 0 kill the player
-            self.die(game.level_test)
+            self.die(game.levels[game.current_level])
 
     # Make sprite 'respawn'
     def die(self, level):
-        self.rect.x = level.startX * 32  # X position of start of level
-        self.rect.y = level.startY * 32  # Y position of start of level
+        self.rect.x = level.start_x * 32  # X position of start of level
+        self.rect.y = level.start_y * 32  # Y position of start of level
         self.image = self.standing_frames[0]  # Make sprite standing for respawn
         self.hearts = MAX_HEARTS  # Player regains all lost hearts
+        level.destroy_level()
+        level.create_level()
 
+    # Decrement damage and make sure it never falls below 0
     def check_damaged(self):
         if self.damaged > 0:
             self.damaged -= 1
         if self.damaged < 0:
             self.damaged = 0
 
+    # Decrement invincible_time and make sure it never falls below 0, update invincible attribute if needed
     def check_invincible_time(self):
         if self.invincible_time > 0:
             self.invincible_time -= 1
@@ -295,7 +315,7 @@ class Player(Entity):
         self.check_damaged()
         self.apply_gravity()  # Apply gravity to player
         self.move_and_process_platforms(game.platforms)  # Move and process collisions with platforms
-        self.check_world_boundaries()  # Check sprite still in world boundaries
+        self.check_world_boundaries(game.levels[game.current_level])  # Check sprite still in world boundaries
         self.animate()  # Animate player sprite
 
 
@@ -303,12 +323,12 @@ class Player(Entity):
 class Enemy(Entity):
 
     # Enemy constructor
-    def __init__(self, x, y, player):
+    def __init__(self, x, y, player, image_file, image_x, image_y, image_width, image_height):
         self.dir = path.dirname(__file__)  # Get file directory
         img_dir = path.join(self.dir, 'img')  # Path to img file
         # Create spritesheet object for platform spritesheet
-        self.spritesheet = Spritesheet(path.join(img_dir, 'spritesheet_jumper.png'))
-        image = self.spritesheet.get_image(801, 609, 110, 141)
+        self.spritesheet = Spritesheet(path.join(img_dir, image_file))
+        image = self.spritesheet.get_image(image_x, image_y, image_width, image_height)
         super().__init__(x, y, image)  # Call constructor for Entity
         self.attacking = False
         self.hurt = False
@@ -328,47 +348,46 @@ class Enemy(Entity):
 
     # Populate frame lists with image objects
     def images_load(self):
-        self.hurt_frames = [self.spritesheet.get_image(800, 860, 110, 141)]
-        for frame in self.hurt_frames:
-            frame.set_colorkey((0, 0, 0))
-        self.standing_frames = [self.spritesheet.get_image(801, 609, 110, 141)]
-        for frame in self.standing_frames:
-            frame.set_colorkey((0, 0, 0))
+        pass
 
     # Run the enemy AI
     def run_ai(self, game):
         self.attacking = False
         player_position = self.player.rect.x
         enemy_position = self.rect.x
-        if enemy_position + (WIDTH / 2) > player_position > enemy_position - (WIDTH / 2) and not self.hurt:
+        if enemy_position + (3 * GRID_SIZE) > player_position > enemy_position - (3 * GRID_SIZE) and not self.hurt:
             self.attack(game)
         else:
             self.stop()
 
     # Attack the player
     def attack(self, game):
-        self.move_left()
+        self.move()
+        self.hurt_player(game)
+
+    def hurt_player(self, game):
         hit = pg.sprite.spritecollide(self, game.players, False)
-        if not self.player.invincible and len(hit) > 0 and self.player.damaged == 0 and\
+        if not self.player.invincible and len(hit) > 0 and self.player.damaged == 0 and \
                 not self.player.rect.bottom <= self.rect.top + 15:
             self.player.add_hearts(-1, game)
-            self.player.damaged = 50
+            self.player.damaged = 80
 
     # Check if enemy has been hit
     def check_hit(self, game):
         hit = pg.sprite.spritecollide(self, game.players, False)
-        if len(hit) > 0 and self.player.rect.bottom <= self.rect.top + 10\
-                and self.player.rect.left + 20 > self.rect.left and self.player.vy > 0:
+        if len(hit) > 0 and self.player.rect.bottom <= self.rect.top + 50 and self.player.vy > 0:
             self.hurt = True
             self.damaged = 10
             self.player.vy = -1 * self.player.jump_power
+            game.jump_sound.play()
         elif len(hit) > 0 and self.player.invincible:
             self.hurt = True
             self.damaged = 10
 
     # Check if enemy should die
-    def check_dead(self):
+    def check_dead(self, game):
         if self.hurt and self.damaged == 0:
+            game.hurt_enemy_sound.play()
             self.kill()
             self.rect.x = 0
             self.rect.y = 0
@@ -377,6 +396,8 @@ class Enemy(Entity):
     def check_boundaries(self):
         if self.rect.x < 0 or self.rect.y < 0:
             self.kill()
+            self.rect.x = 0
+            self.rect.y = 0
 
     # Animate enemy
     def animate(self):
@@ -409,7 +430,7 @@ class Enemy(Entity):
     # Update the enemy sprite
     def update(self, game):
         self.check_damaged()
-        self.check_dead()
+        self.check_dead(game)
         self.apply_gravity()
         self.run_ai(game)
         self.move_and_process_platforms(game.platforms)
@@ -417,19 +438,98 @@ class Enemy(Entity):
         self.check_hit(game)
         self.animate()
 
+    # Move the enemy, override used by Flying class
+    def move(self):
+        self.move_left()
+
+
+# Enemies
+class Basic(Enemy):
+
+    # Basic enemy constructor, specifying correct spritesheet and co-ordinates on that sheet
+    def __init__(self, x, y, player):
+        super().__init__(x, y, player, 'spritesheet_jumper.png', 801, 609, 110, 141)
+
+    # Populate frame lists with correct images from spritesheet
+    def images_load(self):
+        self.hurt_frames = [self.spritesheet.get_image(800, 860, 110, 141)]
+        for frame in self.hurt_frames:
+            frame.set_colorkey((0, 0, 0))
+        self.standing_frames = [self.spritesheet.get_image(801, 609, 110, 141)]
+        for frame in self.standing_frames:
+            frame.set_colorkey((0, 0, 0))
+
+
+class Flying(Enemy):
+
+    # Flying enemy constructor, specifying correct spritesheet and co-ordinates on that sheet
+    def __init__(self, x, y, player):
+        super().__init__(x, y, player, 'spritesheet_jumper.png', 568, 1671, 122, 139)
+        self.ticks = 0  # ticks used to determine when to switch direction
+
+    # Populate frame lists with correct images from spritesheet
+    def images_load(self):
+        self.standing_frames = [self.spritesheet.get_image(568, 1671, 122, 139),
+                                self.spritesheet.get_image(568, 1534, 122, 135)]
+        for frame in self.standing_frames:
+            frame.set_colorkey((0, 0, 0))
+        self.hurt_frames = [self.spritesheet.get_image(698, 1801, 120, 128)]
+        for frame in self.hurt_frames:
+            frame.set_colorkey((0, 0, 0))
+
+    # Override run_ai as the flying enemy is always 'attacking' - no check for player
+    def run_ai(self, game):
+        self.attack(game)
+
+    # Override move as flying enemy moves up and down and changes direction each 50 ticks
+    def move(self):
+        self.vy = 1
+        if self.ticks >= 50:
+            self.vy = -3
+        if self.ticks >= 100:
+            self.ticks = 0
+
+    # Override update as gravity not applied to flying enemy
+    def update(self, game):
+        self.check_damaged()
+        self.check_dead(game)
+        self.run_ai(game)
+        self.move_and_process_platforms(game.platforms)
+        self.check_boundaries()
+        self.check_hit(game)
+        self.animate()
+        self.ticks += 1
+
+
+class Worm(Enemy):
+
+    # Worm enemy constructor, specifying correct spritesheet and co-ordinates on that sheet
+    def __init__(self, x, y, player):
+        super().__init__(x, y, player, 'enemies.png', 71, 372, 63, 23)
+
+    # Populate frame lists with correct images from spritesheet
+    def images_load(self):
+        self.standing_frames = [self.spritesheet.get_image(71, 372, 63, 23)]
+        for frame in self.standing_frames:
+            frame.set_colorkey((0, 0, 0))
+        self.hurt_frames = [self.spritesheet.get_image(71, 480, 63, 23)]
+        for frame in self.hurt_frames:
+            frame.set_colorkey((0, 0, 0))
+
 
 # Class for power-ups
 class Powerup(Entity):
 
     # Powerup constructor
-    def __init__(self, x, y):
+    def __init__(self, x, y, image_x, image_y, image_width, image_height):
         self.dir = path.dirname(__file__)  # Get file directory
         img_dir = path.join(self.dir, 'img')  # Path to img file
         # Create spritesheet object for platform spritesheet
         self.spritesheet = Spritesheet(path.join(img_dir, 'spritesheet_jumper.png'))
-        image = self.spritesheet.get_image(814, 1661, 78, 70)
+        image = self.spritesheet.get_image(image_x, image_y, image_width, image_height)
         super().__init__(x, y, image)  # Call constructor for Entity
 
+    # Check to see if player has hit powerup and provide ability and disappear if so
     def check_for_player(self, game):
         hit = pg.sprite.spritecollide(self, game.players, False)
         if len(hit) > 0:
@@ -438,9 +538,36 @@ class Powerup(Entity):
             self.rect.x = 0
             self.rect.y = 0
 
+    # Base class provide_ability method provides sound so call to super().provide_ability can be used to play sound
     def provide_ability(self, game):
+        game.carrot_sound.play()
+
+    # Check for player when being updated
+    def update(self, game):
+        self.check_for_player(game)
+
+
+# Powerups
+class GoldCarrot(Powerup):
+
+    # Specify co-ords in game and co-ords on spritesheet
+    def __init__(self, x, y):
+        super().__init__(x, y, 814, 1661, 78, 70)
+
+    # Override provide_ability to give the player invincibility
+    def provide_ability(self, game):
+        super().provide_ability(game)
         game.player.invincible = True
         game.player.invincible_time = 300
 
-    def update(self, game):
-        self.check_for_player(game)
+
+class Carrot(Powerup):
+
+    # Specify co-ords in the game and co-ords on spritesheet
+    def __init__(self, x, y):
+        super().__init__(x, y, 820, 1733, 78, 70)
+
+    # Override provide_ability to give the player one heart
+    def provide_ability(self, game):
+        super().provide_ability(game)
+        game.player.add_hearts(1, game)

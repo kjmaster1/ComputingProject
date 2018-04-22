@@ -1,4 +1,8 @@
 {
+	"Music": {
+		"file": "level_one.wav"
+	},
+
 	"Player": {
 	
 		"coords": [0,19]
@@ -11,10 +15,10 @@
 		}
 	},
 	"Powerups": {
-	
+
 		"0": {
 			"coords": [12, 16],
-			"type": "invincibility"
+			"type": "gold_carrot"
 		}
 	},
 	"Platforms": {

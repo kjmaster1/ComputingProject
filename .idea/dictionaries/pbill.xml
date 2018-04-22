@@ -2,8 +2,12 @@
   <dictionary name="pbill">
     <words>
       <w>blit</w>
+      <w>freesound</w>
       <w>hacky</w>
+      <w>highscore</w>
+      <w>kenney</w>
       <w>midbottom</w>
+      <w>ords</w>
       <w>platformer</w>
       <w>platformtype</w>
       <w>pygame</w>

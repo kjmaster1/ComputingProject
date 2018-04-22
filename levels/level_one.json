@@ -1,0 +1,229 @@
+{
+	"Music": {
+		"file": "level_one.wav"
+	},
+
+	"Player": {
+	
+		"coords": [0,18]
+	},
+	"Enemies": {
+	
+		"0": {
+			"coords": [7, 16],
+			"type": "worm"
+		},
+
+		"1": {
+			"coords": [12, 13],
+			"type": "basic"
+		},
+
+		"2": {
+			"coords": [20, 12],
+			"type": "basic"
+		},
+
+		"3": {
+			"coords": [27, 17],
+			"type": "flying"
+		},
+
+		"4": {
+			"coords": [33, 18],
+			"type": "basic"
+		},
+
+		"5": {
+			"coords": [36, 18],
+			"type": "basic"
+		},
+
+		"6": {
+			"coords": [47, 12],
+			"type": "worm"
+		},
+
+		"7": {
+			"coords": [52, 15],
+			"type": "flying"
+		},
+
+		"8": {
+			"coords": [58, 18],
+			"type": "basic"
+		},
+
+		"9": {
+			"coords": [61, 17],
+			"type": "flying"
+		}
+	},
+	"Powerups": {
+
+		"0": {
+			"coords": [34, 16],
+			"type": "carrot"
+		}
+	},
+	"Platforms": {
+
+		"Floor": {
+
+			"Gaps": {
+				"0": 10,
+				"1": 11,
+				"2": 12,
+				"3": 13,
+				"4": 14,
+
+				"5": 27,
+				"6": 28,
+
+				"7": 38,
+				"8": 39,
+				"9": 40,
+				"10": 41,
+				"11": 42,
+				"12": 43,
+				"13": 44,
+				"14": 45,
+				"15": 46,
+
+				"16": 61
+			},
+
+			"y": 19,
+
+			"length": 64
+		},
+
+		"Other": {
+
+			"0": {
+				"coords": [5, 16],
+				"type": "rounded_left"
+			},
+
+			"1": {
+				"coords": [6, 16],
+				"type": "square_grass"
+			},
+
+			"2": {
+				"coords": [7, 16],
+				"type": "square_grass"
+			},
+
+			"3": {
+				"coords": [8, 16],
+				"type": "square_grass"
+			},
+
+			"4": {
+				"coords": [9, 16],
+				"type": "rounded_right"
+			},
+
+			"5": {
+				"coords": [12, 14],
+				"type": "square_grass"
+			},
+
+			"6": {
+				"coords": [15, 16],
+				"type": "rounded_left"
+			},
+
+			"7": {
+				"coords": [16, 16],
+				"type": "square_grass"
+			},
+
+			"8": {
+				"coords": [17, 16],
+				"type": "rounded_right"
+			},
+
+			"9": {
+				"coords": [18, 13],
+				"type": "rounded_left"
+			},
+
+			"10": {
+				"coords": [19, 13],
+				"type": "square_grass"
+			},
+
+			"11": {
+				"coords": [20, 13],
+				"type": "square_grass"
+			},
+
+			"12": {
+				"coords": [21, 13],
+				"type": "rounded_right"
+			},
+
+			"13": {
+				"coords": [34, 17],
+				"type": "small_grass"
+			},
+
+			"14": {
+				"coords": [38, 18],
+				"type": "rounded_left"
+			},
+
+			"15": {
+				"coords": [39, 18],
+				"type": "square_grass"
+			},
+
+			"16": {
+				"coords": [40, 18],
+				"type": "rounded_right"
+			},
+
+			"17": {
+				"coords": [42, 16],
+				"type": "small_grass"
+			},
+
+			"18": {
+				"coords": [44, 13],
+				"type": "rounded_left"
+			},
+
+			"19": {
+				"coords": [45, 13],
+				"type": "square_grass"
+			},
+
+			"20": {
+				"coords": [46, 13],
+				"type": "square_grass"
+			},
+
+			"21": {
+				"coords": [47, 13],
+				"type": "square_grass"
+			},
+
+			"22": {
+				"coords": [48, 13],
+				"type": "square_grass"
+			},
+
+			"23": {
+				"coords": [49, 13],
+				"type": "square_grass"
+			},
+
+			"24": {
+				"coords": [50, 13],
+				"type": "rounded_right"
+			}
+		}
+	}
+}

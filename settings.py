@@ -1,4 +1,5 @@
 import pygame as pg
+from os import path
 # Settings for the game
 
 # Window settings
@@ -8,6 +9,9 @@ WIDTH = 960
 HEIGHT = 640
 FPS = 60
 GRID_SIZE = 32
+
+DIR = path.dirname(__file__)  # Get file directory
+IMAGES_DIR = path.join(DIR, 'images')  # Path to img file
 
 # Player settings
 MAX_HEARTS = 3

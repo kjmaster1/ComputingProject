@@ -17,7 +17,7 @@ IMAGES_DIR = path.join(DIR, 'images')  # Path to img file
 MAX_HEARTS = 3
 
 # Levels
-MAX_LEVELS = 2
+MAX_LEVELS = 3
 
 # Controls
 LEFT = pg.K_LEFT

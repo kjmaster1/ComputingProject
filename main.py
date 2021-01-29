@@ -30,9 +30,11 @@ class Game:
         self.level_test = Level("level_test.json", self)
         self.level_one = Level("level_one.json", self)
         self.level_two = Level("level_two.json", self)
+        self.level_three = Level("level_three.json", self)
         self.levels = []
         self.levels.append(self.level_one)
         self.levels.append(self.level_two)
+        self.levels.append(self.level_three)
         self.player = None
         self.current_level = 0
         self.dir = path.dirname(__file__)
